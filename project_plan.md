@@ -2,7 +2,7 @@
 
 ## Overview
 
-Build a Python batch inference pipeline that reads prompts from `Inputs/input.csv`, sends each to the OpenAI Chat Completions API (gpt-4.1) with a system prompt encoding the toxicity rubric from `Rubric.md`, and writes classification + chain-of-thought justification to `Outputs/output.csv`.
+Build a Python batch inference pipeline that reads prompts from `Inputs/input.csv`, sends each to the Google Gemini API (gemini-2.5-flash) with a system prompt encoding the toxicity rubric from `Rubric.md`, and writes classification + chain-of-thought justification to `Outputs/output.csv`.
 
 ### Output Format
 
@@ -17,12 +17,12 @@ Build a Python batch inference pipeline that reads prompts from `Inputs/input.cs
 ## Phase 1: Project Setup
 
 ### 1.1 Create `requirements.txt`
-- `openai>=1.0`
+- `google-genai>=1.0`
 - `python-dotenv`
 - `pytest`
 
 ### 1.2 Create `.env.example` and `.gitignore`
-- `.env.example` with placeholder: `OPENAI_API_KEY=sk-your-key-here`
+- `.env.example` with placeholder: `GEMINI_API_KEY=your-api-key-here`
 - `.gitignore` entry for `.env` to prevent committing secrets
 
 ---
@@ -43,8 +43,8 @@ Build a Python batch inference pipeline that reads prompts from `Inputs/input.cs
   - Output structured JSON: `{"classification": "...", "chain_of_thought": "..."}`
 
 #### `classify_text(client, model, system_prompt, text) -> dict`
-- Sends a single Chat Completions request
-- Uses `response_format={"type": "json_object"}` to enforce JSON output
+- Sends a single `generateContent` request via the Gemini SDK
+- Uses `response_mime_type="application/json"` with a `response_schema` to enforce structured JSON output
 - Parses and returns dict with `classification` and `chain_of_thought`
 - Implements retry logic with exponential backoff (max 3 retries) for transient errors (rate limits, timeouts)
 
@@ -56,7 +56,7 @@ Build a Python batch inference pipeline that reads prompts from `Inputs/input.cs
 
 #### `main() -> None`
 - Loads `.env` via `python-dotenv`
-- Initializes `openai.OpenAI()` client
+- Initializes `google.genai.Client()` with the `GEMINI_API_KEY`
 - Calls `process_csv` with default paths (`Inputs/input.csv`, `Outputs/output.csv`, `Rubric.md`)
 - Accepts optional CLI arguments via `argparse` for custom input/output/rubric paths and model selection
 
@@ -69,10 +69,10 @@ Build a Python batch inference pipeline that reads prompts from `Inputs/input.cs
 | Test | What it verifies |
 |---|---|
 | `test_build_system_prompt` | Rubric text and JSON output instruction are present in the system prompt |
-| `test_classify_text_valid_response` | Mocks OpenAI client with known JSON; asserts correct parsing of classification and chain_of_thought |
+| `test_classify_text_valid_response` | Mocks Gemini client with known JSON; asserts correct parsing of classification and chain_of_thought |
 | `test_classify_text_invalid_json` | Mocks a non-JSON response; asserts graceful error handling (no crash) |
 | `test_classify_text_retry_on_rate_limit` | Mocks rate limit error then success; asserts retry logic works |
-| `test_process_csv_end_to_end` | Mocks OpenAI client; runs full pipeline on a 2-row temp CSV; asserts output CSV has correct columns and row count |
+| `test_process_csv_end_to_end` | Mocks Gemini client; runs full pipeline on a 2-row temp CSV; asserts output CSV has correct columns and row count |
 | `test_classification_values` | Asserts every classification value is one of the 4 valid rubric categories |
 
 ### 3.2 Manual QA Checklist
@@ -123,7 +123,7 @@ Build a Python batch inference pipeline that reads prompts from `Inputs/input.cs
 
 1. `pip install -r requirements.txt` completes without errors
 2. `pytest tests/` — all unit tests pass
-3. `python classifier.py` with `OPENAI_API_KEY` set produces `Outputs/output.csv`
+3. `python classifier.py` with `GEMINI_API_KEY` set produces `Outputs/output.csv`
 4. Output CSV contains exactly 8 data rows plus header
 5. Output CSV columns: `text_to_evaluate`, `classification`, `chain_of_thought`
 6. Every `classification` value is one of: "Very Toxic", "Toxic", "Hard to Say", "Not Toxic"
@@ -135,4 +135,4 @@ Build a Python batch inference pipeline that reads prompts from `Inputs/input.cs
 
 - **Concurrency**: Current design is sequential (one API call at a time). Sufficient for small inputs. For larger datasets, add `asyncio` with a semaphore for parallel requests.
 - **Cost tracking**: Log token usage from API responses to monitor spend.
-- **Batch API migration**: OpenAI's Batch API offers 50% cost reduction with 24h turnaround — viable for non-urgent large-scale runs.
+- **Batch API migration**: Gemini's Batch API supports async processing for large-scale runs — viable for non-urgent bulk classification.
