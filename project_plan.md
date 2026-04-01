@@ -16,15 +16,12 @@ Build a Python batch inference pipeline that reads prompts from `Inputs/input.cs
 
 ## Phase 1: Project Setup
 
-### 1.1 Fix output directory name
-- Rename `Outpus/` → `Outputs/` via `git mv`
-
-### 1.2 Create `requirements.txt`
+### 1.1 Create `requirements.txt`
 - `openai>=1.0`
 - `python-dotenv`
 - `pytest`
 
-### 1.3 Create `.env.example` and `.gitignore`
+### 1.2 Create `.env.example` and `.gitignore`
 - `.env.example` with placeholder: `OPENAI_API_KEY=sk-your-key-here`
 - `.gitignore` entry for `.env` to prevent committing secrets
 
