@@ -77,17 +77,17 @@ Build a Python batch inference pipeline that reads prompts from `Inputs/input.cs
 
 ### 3.2 Manual QA Checklist
 
-- [ ] `pip install -r requirements.txt` succeeds
-- [ ] `pytest tests/` — all unit tests pass (mocked, no API key required)
-- [ ] Run pipeline against `Inputs/input.csv` with a real API key
-- [ ] Verify all 8 rows produce output in `Outputs/output.csv`
-- [ ] Verify each classification is one of the 4 rubric categories
-- [ ] Spot-check chain-of-thought coherence:
+- [x] `pip install -r requirements.txt` succeeds
+- [x] `pytest tests/` — all unit tests pass (mocked, no API key required)
+- [x] Run pipeline against `Inputs/input.csv` with a real API key
+- [x] Verify all 8 rows produce output in `Outputs/output.csv`
+- [x] Verify each classification is one of the 4 rubric categories
+- [x] Spot-check chain-of-thought coherence:
   - "haha you guys are a bunch of losers" → should be Toxic or Very Toxic
   - "It was a great show..." → should be Not Toxic
   - "This is such an urgent design problem; kudos..." → should be Not Toxic
-- [ ] Verify output CSV is valid and opens correctly in spreadsheet software
-- [ ] Verify `.env` is not committed to git
+- [x] Verify output CSV is valid and opens correctly in spreadsheet software
+- [x] Verify `.env` is not committed to git
 
 ---
 
