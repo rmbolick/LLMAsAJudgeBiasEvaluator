@@ -136,3 +136,91 @@ Build a Python batch inference pipeline that reads prompts from `Inputs/input.cs
 - **Concurrency**: Current design is sequential (one API call at a time). Sufficient for small inputs. For larger datasets, add `asyncio` with a semaphore for parallel requests.
 - **Cost tracking**: Log token usage from API responses to monitor spend.
 - **Batch API migration**: Gemini's Batch API supports async processing for large-scale runs — viable for non-urgent bulk classification.
+
+---
+
+## Phase 5: Secondary LLM-as-a-Judge — Chain-of-Thought Alignment Evaluator
+
+### Overview
+
+Add a secondary Gemini-powered judge that runs after the toxicity classifier. For each classified row, this judge receives the original text, its `classification`, and its `chain_of_thought`, then assesses whether the reasoning coherently and logically justifies the assigned label. Its evaluation criteria are defined in `CoT_Judge_Rubric.md`.
+
+### Output Format (updated)
+
+| Column | Description |
+|---|---|
+| `text_to_evaluate` | Original input text (unchanged) |
+| `classification` | Toxicity label from the primary judge (unchanged) |
+| `chain_of_thought` | Reasoning from the primary judge (unchanged) |
+| `cot_verdict` | One of: "Well-Aligned", "Partially Aligned", "Misaligned" |
+| `cot_judge_reasoning` | The secondary judge's explanation for its verdict |
+
+### 5.1 Create `CoT_Judge_Rubric.md`
+
+Define the four evaluation dimensions and three verdict categories used by the secondary judge:
+
+- **Evaluation Dimensions**: Classification Support, Rubric Grounding, Logical Consistency, Evidence Use
+- **Verdict Categories**: "Well-Aligned", "Partially Aligned", "Misaligned"
+
+File already created at `CoT_Judge_Rubric.md`.
+
+### 5.2 Add CoT Judge Functions to `classifier.py`
+
+#### `build_cot_judge_prompt(rubric_text: str) -> str`
+- Constructs a system prompt instructing the LLM to act as a CoT alignment judge
+- Embeds the `CoT_Judge_Rubric.md` content
+- Instructs the model to evaluate across all four rubric dimensions before assigning a verdict
+- Specifies structured JSON output: `{"cot_verdict": "...", "cot_judge_reasoning": "..."}`
+
+#### `COT_JUDGE_RESPONSE_SCHEMA` (module-level constant)
+- JSON schema enforcing structured output:
+  - `cot_verdict`: string enum — `["Well-Aligned", "Partially Aligned", "Misaligned"]`
+  - `cot_judge_reasoning`: string
+  - Both fields required
+
+#### `evaluate_cot(client, model: str, system_prompt: str, text: str, classification: str, chain_of_thought: str) -> dict`
+- Constructs a user message containing the original text, assigned classification, and chain of thought, formatted clearly for the judge
+- Sends a `generate_content` request to the Gemini API using `response_mime_type="application/json"` and `COT_JUDGE_RESPONSE_SCHEMA`
+- Returns dict with `cot_verdict` and `cot_judge_reasoning`
+- Uses the same retry pattern (exponential backoff, max 3 retries) as `classify_text`
+- On parse failure, returns `{"cot_verdict": "Error", "cot_judge_reasoning": "..."}`
+
+### 5.3 Update `process_csv()` to Run the CoT Judge
+
+- Add `cot_rubric_path: str | None = None` parameter; when `None`, the CoT judge is skipped (backward-compatible default)
+- When `cot_rubric_path` is provided:
+  - Load the CoT rubric via `load_rubric(cot_rubric_path)`
+  - Build the CoT judge system prompt via `build_cot_judge_prompt()`
+  - After each `classify_text` call, immediately call `evaluate_cot()` with the result
+  - Append `cot_verdict` and `cot_judge_reasoning` to the row dict
+- Update the output CSV `fieldnames` to include the two new columns when the CoT judge is active
+
+### 5.4 Update `main()` CLI Arguments
+
+- Add `--cot-rubric` argument (default: `None`):
+  - When omitted, pipeline runs as before (no CoT judge, 3-column output)
+  - When provided with a path (e.g., `CoT_Judge_Rubric.md`), the CoT judge runs and output has 5 columns
+- Pass `cot_rubric_path` through to `process_csv()`
+
+### 5.5 Unit Tests — additions to `tests/test_classifier.py`
+
+| Test | What it verifies |
+|---|---|
+| `test_build_cot_judge_prompt` | Rubric text, verdict enum values, and JSON instruction are present in the prompt |
+| `test_evaluate_cot_valid_response` | Mocks Gemini client; asserts correct parsing of `cot_verdict` and `cot_judge_reasoning` |
+| `test_evaluate_cot_invalid_json` | Mocks a non-JSON response; asserts graceful error return without crash |
+| `test_evaluate_cot_retry_on_error` | Mocks transient API error then success; asserts retry logic fires |
+| `test_process_csv_with_cot_judge` | Mocks both judges; runs full pipeline with `cot_rubric_path` set; asserts 5-column output CSV |
+| `test_process_csv_without_cot_judge` | Confirms pipeline still produces 3-column output when `cot_rubric_path=None` |
+
+### 5.6 Manual QA Checklist
+
+- [ ] `pytest tests/` — all new and existing tests pass
+- [ ] Run pipeline with `--cot-rubric CoT_Judge_Rubric.md` against `Inputs/input.csv`
+- [ ] Verify output CSV has 5 columns: `text_to_evaluate`, `classification`, `chain_of_thought`, `cot_verdict`, `cot_judge_reasoning`
+- [ ] Verify each `cot_verdict` is one of: "Well-Aligned", "Partially Aligned", "Misaligned"
+- [ ] Spot-check alignment on known cases from `Outputs/output.csv`:
+  - "haha you guys are a bunch of losers" → Toxic, CoT cites "losers" as insult → should be "Well-Aligned"
+  - "FFFFUUUUUUUUUUUUUUU" → Not Toxic, CoT notes no personal attack → should be "Well-Aligned"
+- [ ] Run pipeline **without** `--cot-rubric` flag; confirm output is unchanged 3-column format
+- [ ] Verify `.gitignore` excludes new output CSVs if applicable

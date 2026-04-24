@@ -43,6 +43,80 @@ RESPONSE_SCHEMA = {
     "required": ["classification", "chain_of_thought"],
 }
 
+COT_JUDGE_RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "cot_verdict": {
+            "type": "string",
+            "enum": ["Well-Aligned", "Partially Aligned", "Misaligned"],
+        },
+        "cot_judge_reasoning": {"type": "string"},
+    },
+    "required": ["cot_verdict", "cot_judge_reasoning"],
+}
+
+
+def build_cot_judge_prompt(rubric_text: str) -> str:
+    return (
+        "You are a chain-of-thought alignment judge. Your task is to evaluate whether "
+        "a toxicity classifier's reasoning coherently and logically justifies its assigned "
+        "classification label. You are NOT re-evaluating the original text for toxicity — "
+        "you are only assessing the quality of the reasoning.\n\n"
+        "## CoT Judge Rubric\n\n"
+        f"{rubric_text}\n\n"
+        "## Instructions\n\n"
+        "1. Read the original text, the assigned classification, and the chain of thought.\n"
+        "2. Assess the chain of thought against all four rubric dimensions: "
+        "Classification Support, Rubric Grounding, Logical Consistency, and Evidence Use.\n"
+        "3. Assign exactly one verdict from: "
+        '"Well-Aligned", "Partially Aligned", "Misaligned".\n'
+        "4. Write your explanation in the `cot_judge_reasoning` field.\n\n"
+        "Respond with JSON: "
+        '{"cot_verdict": "...", "cot_judge_reasoning": "..."}'
+    )
+
+
+def evaluate_cot(client, model: str, system_prompt: str, text: str,
+                 classification: str, chain_of_thought: str) -> dict:
+    user_message = (
+        f"## Original Text\n{text}\n\n"
+        f"## Assigned Classification\n{classification}\n\n"
+        f"## Chain of Thought\n{chain_of_thought}"
+    )
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=user_message,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_prompt,
+                    response_mime_type="application/json",
+                    response_schema=COT_JUDGE_RESPONSE_SCHEMA,
+                ),
+            )
+            result = json.loads(response.text)
+            return {
+                "cot_verdict": result["cot_verdict"],
+                "cot_judge_reasoning": result["cot_judge_reasoning"],
+            }
+        except (json.JSONDecodeError, KeyError) as e:
+            return {
+                "cot_verdict": "Error",
+                "cot_judge_reasoning": f"Failed to parse response: {e}",
+            }
+        except Exception as e:
+            if attempt < max_retries - 1:
+                wait = 2 ** attempt
+                print(f"  CoT judge retry {attempt + 1}/{max_retries} after error: {e}. "
+                      f"Waiting {wait}s...")
+                time.sleep(wait)
+            else:
+                return {
+                    "cot_verdict": "Error",
+                    "cot_judge_reasoning": f"Failed after {max_retries} retries: {e}",
+                }
+
 
 def classify_text(client, model: str, system_prompt: str, text: str) -> dict:
     max_retries = 3
@@ -81,9 +155,14 @@ def classify_text(client, model: str, system_prompt: str, text: str) -> dict:
 
 
 def process_csv(input_path: str, output_path: str, rubric_path: str,
-                model: str, client) -> None:
+                model: str, client, cot_rubric_path: str | None = None) -> None:
     rubric_text = load_rubric(rubric_path)
     system_prompt = build_system_prompt(rubric_text)
+
+    cot_system_prompt = None
+    if cot_rubric_path is not None:
+        cot_rubric_text = load_rubric(cot_rubric_path)
+        cot_system_prompt = build_cot_judge_prompt(cot_rubric_text)
 
     with open(input_path, "r", newline="") as infile:
         reader = csv.DictReader(infile)
@@ -96,19 +175,28 @@ def process_csv(input_path: str, output_path: str, rubric_path: str,
         text = row["text_to_evaluate"]
         print(f"Processing row {i}/{total}...")
         result = classify_text(client, model, system_prompt, text)
-        results.append({
+        output_row = {
             "text_to_evaluate": text,
             "classification": result["classification"],
             "chain_of_thought": result["chain_of_thought"],
-        })
+        }
+        if cot_system_prompt is not None:
+            cot_result = evaluate_cot(
+                client, model, cot_system_prompt,
+                text, result["classification"], result["chain_of_thought"],
+            )
+            output_row["cot_verdict"] = cot_result["cot_verdict"]
+            output_row["cot_judge_reasoning"] = cot_result["cot_judge_reasoning"]
+        results.append(output_row)
+
+    fieldnames = ["text_to_evaluate", "classification", "chain_of_thought"]
+    if cot_system_prompt is not None:
+        fieldnames += ["cot_verdict", "cot_judge_reasoning"]
 
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
 
     with open(output_path, "w", newline="") as outfile:
-        writer = csv.DictWriter(
-            outfile,
-            fieldnames=["text_to_evaluate", "classification", "chain_of_thought"],
-        )
+        writer = csv.DictWriter(outfile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(results)
 
@@ -127,6 +215,8 @@ def main():
                         help="Path to rubric markdown file")
     parser.add_argument("--model", default="gemini-2.5-flash",
                         help="Gemini model name")
+    parser.add_argument("--cot-rubric", default=None,
+                        help="Path to CoT judge rubric; enables the secondary judge when set")
     args = parser.parse_args()
 
     load_dotenv()
@@ -135,7 +225,8 @@ def main():
         raise SystemExit("GEMINI_API_KEY not set. Create a .env file or export it.")
 
     client = genai.Client(api_key=api_key)
-    process_csv(args.input, args.output, args.rubric, args.model, client)
+    process_csv(args.input, args.output, args.rubric, args.model, client,
+                cot_rubric_path=args.cot_rubric)
 
 
 if __name__ == "__main__":
