@@ -2,6 +2,8 @@
 
 A Python batch inference pipeline that classifies text toxicity using Google Gemini as an LLM judge. It reads prompts from a CSV, evaluates each against a rubric, and outputs classifications with chain-of-thought reasoning. An optional secondary judge evaluates whether each chain of thought coherently justifies its assigned classification.
 
+Extended thinking is enabled by default, causing Gemini to reason internally before producing any output. The raw thinking tokens are captured and stored alongside the schema-generated chain of thought, giving the CoT judge access to genuine pre-output reasoning rather than post-hoc rationalization.
+
 ## Setup
 
 1. **Install dependencies**
@@ -23,7 +25,7 @@ A Python batch inference pipeline that classifies text toxicity using Google Gem
 ## Usage
 
 ```bash
-python classifier.py [--input PATH] [--output PATH] [--rubric PATH] [--model MODEL] [--cot-rubric PATH]
+python classifier.py [--input PATH] [--output PATH] [--rubric PATH] [--model MODEL] [--cot-rubric PATH] [--thinking-budget N]
 ```
 
 | Argument | Default | Description |
@@ -33,15 +35,22 @@ python classifier.py [--input PATH] [--output PATH] [--rubric PATH] [--model MOD
 | `--rubric` | `Rubric.md` | Path to the toxicity rubric markdown file |
 | `--model` | `gemini-2.5-flash` | Gemini model name |
 | `--cot-rubric` | _(none)_ | Path to the CoT judge rubric; enables the secondary judge when set |
+| `--thinking-budget` | `-1` | Thinking token budget: `-1` = AUTOMATIC (model decides), `0` = disabled, positive integer = fixed budget |
 
 ### Examples
 
 ```bash
-# Toxicity classification only (3-column output)
+# Toxicity classification only, thinking enabled automatically (4-column output)
 python classifier.py
 
-# With secondary CoT alignment judge (5-column output)
+# With secondary CoT alignment judge (6-column output)
 python classifier.py --cot-rubric CoT_Judge_Rubric.md
+
+# Fixed thinking budget for reproducibility
+python classifier.py --cot-rubric CoT_Judge_Rubric.md --thinking-budget 8000
+
+# Disable thinking (reverts to single-pass JSON generation)
+python classifier.py --thinking-budget 0
 
 # Custom paths
 python classifier.py --input data/my_texts.csv --output data/results.csv --cot-rubric CoT_Judge_Rubric.md
@@ -55,7 +64,8 @@ python classifier.py --input data/my_texts.csv --output data/results.csv --cot-r
 |---|---|
 | `text_to_evaluate` | Original input text |
 | `classification` | One of: "Very Toxic", "Toxic", "Hard to Say", "Not Toxic" |
-| `chain_of_thought` | Step-by-step reasoning justifying the classification |
+| `thinking` | Raw internal reasoning tokens from Gemini extended thinking; empty string when `--thinking-budget 0` |
+| `chain_of_thought` | Schema-constrained reasoning field from the JSON output |
 
 ### With `--cot-rubric` (secondary judge enabled)
 
@@ -66,7 +76,13 @@ Two additional columns are appended:
 | `cot_verdict` | One of: "Well-Aligned", "Partially Aligned", "Misaligned" |
 | `cot_judge_reasoning` | The secondary judge's explanation for its verdict |
 
-The CoT judge evaluates each chain of thought across four dimensions: Classification Support, Rubric Grounding, Logical Consistency, and Evidence Use. It does not re-evaluate the original text for toxicity — it only assesses the quality of the reasoning.
+The CoT judge evaluates the `thinking` tokens (when present) rather than the `chain_of_thought` field, since thinking tokens represent genuine pre-output reasoning. It assesses reasoning across four dimensions: Classification Support, Rubric Grounding, Logical Consistency, and Evidence Use. It does not re-evaluate the original text for toxicity.
+
+## How Extended Thinking Works
+
+Without extended thinking, `classification` and `chain_of_thought` are co-generated in a single constrained JSON pass. Because `classification` appeared first in the schema, the label was sampled before any reasoning was written — making the chain of thought a post-hoc rationalization.
+
+With `thinking_config` enabled, Gemini reasons internally via thinking tokens before producing any output tokens. The JSON output (and the CoT judge's evaluation) is then genuinely post-reasoning. The `thinking` column captures these tokens verbatim for transparency and analysis.
 
 ## Running Tests
 

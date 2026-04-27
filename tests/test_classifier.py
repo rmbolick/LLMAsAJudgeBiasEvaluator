@@ -11,6 +11,7 @@ from classifier import (
     build_system_prompt,
     classify_text,
     evaluate_cot,
+    extract_thinking_tokens,
     process_csv,
 )
 
@@ -115,7 +116,7 @@ def test_process_csv_end_to_end():
 
         assert len(rows) == 2
         assert set(reader.fieldnames) == {
-            "text_to_evaluate", "classification", "chain_of_thought"
+            "text_to_evaluate", "classification", "thinking", "chain_of_thought"
         }
         for row in rows:
             assert row["classification"] == "Not Toxic"
@@ -252,7 +253,7 @@ def test_process_csv_with_cot_judge():
 
     assert len(rows) == 2
     assert set(fieldnames) == {
-        "text_to_evaluate", "classification", "chain_of_thought",
+        "text_to_evaluate", "classification", "thinking", "chain_of_thought",
         "cot_verdict", "cot_judge_reasoning",
     }
     for row in rows:
@@ -289,6 +290,79 @@ def test_process_csv_without_cot_judge():
             fieldnames = reader.fieldnames
 
     assert len(rows) == 1
-    assert set(fieldnames) == {"text_to_evaluate", "classification", "chain_of_thought"}
+    assert set(fieldnames) == {
+        "text_to_evaluate", "classification", "thinking", "chain_of_thought"
+    }
     assert "cot_verdict" not in fieldnames
     assert "cot_judge_reasoning" not in fieldnames
+
+
+# --- Extended Thinking Tests ---
+
+def test_classify_text_returns_thinking_key():
+    payload = json.dumps({
+        "chain_of_thought": "Seems harmless.",
+        "classification": "Not Toxic",
+    })
+    client = _make_mock_client(payload)
+    result = classify_text(client, "gemini-2.5-flash", "system prompt", "hello")
+    assert "thinking" in result
+
+
+def test_extract_thinking_tokens_with_thought_parts():
+    part = MagicMock()
+    part.thought = True
+    part.text = "my internal reasoning"
+
+    response = MagicMock()
+    response.candidates[0].content.parts = [part]
+
+    assert extract_thinking_tokens(response) == "my internal reasoning"
+
+
+def test_extract_thinking_tokens_empty_on_no_thoughts():
+    part = MagicMock()
+    part.thought = False
+    part.text = "some output"
+
+    response = MagicMock()
+    response.candidates[0].content.parts = [part]
+
+    assert extract_thinking_tokens(response) == ""
+
+
+def test_classify_text_passes_thinking_budget():
+    from google.genai import types as genai_types
+
+    payload = json.dumps({
+        "chain_of_thought": "Looks fine.",
+        "classification": "Not Toxic",
+    })
+    client = _make_mock_client(payload)
+
+    classify_text(client, "gemini-2.5-flash", "system prompt", "hello",
+                  thinking_budget=512)
+
+    call_kwargs = client.models.generate_content.call_args.kwargs
+    config = call_kwargs.get("config") or client.models.generate_content.call_args.args[2]
+    assert config.thinking_config.thinking_budget == 512
+    assert config.thinking_config.include_thoughts is True
+
+
+def test_evaluate_cot_uses_thinking_tokens_when_provided():
+    payload = json.dumps({
+        "cot_verdict": "Well-Aligned",
+        "cot_judge_reasoning": "Good reasoning.",
+    })
+    client = _make_mock_client(payload)
+
+    evaluate_cot(
+        client, "gemini-2.5-flash", "system prompt",
+        "some text", "Toxic", "chain reasoning here",
+        thinking="internal thinking tokens here",
+    )
+
+    call_args = client.models.generate_content.call_args
+    contents = call_args.kwargs.get("contents") or call_args.args[1]
+    assert "Thinking Tokens" in contents
+    assert "Chain of Thought" not in contents

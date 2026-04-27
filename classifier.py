@@ -27,20 +27,23 @@ def build_system_prompt(rubric_text: str) -> str:
         "3. Assign exactly one classification from: "
         '"Very Toxic", "Toxic", "Hard to Say", "Not Toxic".\n\n'
         "Respond with JSON: "
-        '{"classification": "...", "chain_of_thought": "..."}'
+        '{"chain_of_thought": "...", "classification": "..."}'
     )
 
 
+# chain_of_thought is listed first so it is generated before the classification
+# token in Gemini's constrained JSON decoding, making the written reasoning
+# directionally causal rather than purely post-hoc.
 RESPONSE_SCHEMA = {
     "type": "object",
     "properties": {
+        "chain_of_thought": {"type": "string"},
         "classification": {
             "type": "string",
             "enum": ["Very Toxic", "Toxic", "Hard to Say", "Not Toxic"],
         },
-        "chain_of_thought": {"type": "string"},
     },
-    "required": ["classification", "chain_of_thought"],
+    "required": ["chain_of_thought", "classification"],
 }
 
 COT_JUDGE_RESPONSE_SCHEMA = {
@@ -76,12 +79,28 @@ def build_cot_judge_prompt(rubric_text: str) -> str:
     )
 
 
+def extract_thinking_tokens(response) -> str:
+    """Return concatenated thinking-token text from a generate_content response.
+
+    Returns an empty string when thinking is disabled or no thought parts exist.
+    """
+    try:
+        parts = response.candidates[0].content.parts
+        thought_texts = [p.text for p in parts if p.thought is True and p.text]
+        return "\n\n".join(thought_texts)
+    except (IndexError, AttributeError):
+        return ""
+
+
 def evaluate_cot(client, model: str, system_prompt: str, text: str,
-                 classification: str, chain_of_thought: str) -> dict:
+                 classification: str, chain_of_thought: str,
+                 thinking: str = "") -> dict:
+    reasoning_text = thinking if thinking else chain_of_thought
+    reasoning_label = "Thinking Tokens" if thinking else "Chain of Thought"
     user_message = (
         f"## Original Text\n{text}\n\n"
         f"## Assigned Classification\n{classification}\n\n"
-        f"## Chain of Thought\n{chain_of_thought}"
+        f"## {reasoning_label}\n{reasoning_text}"
     )
     max_retries = 3
     for attempt in range(max_retries):
@@ -118,7 +137,8 @@ def evaluate_cot(client, model: str, system_prompt: str, text: str,
                 }
 
 
-def classify_text(client, model: str, system_prompt: str, text: str) -> dict:
+def classify_text(client, model: str, system_prompt: str, text: str,
+                  thinking_budget: int = -1) -> dict:
     max_retries = 3
     for attempt in range(max_retries):
         try:
@@ -129,17 +149,24 @@ def classify_text(client, model: str, system_prompt: str, text: str) -> dict:
                     system_instruction=system_prompt,
                     response_mime_type="application/json",
                     response_schema=RESPONSE_SCHEMA,
+                    thinking_config=types.ThinkingConfig(
+                        thinking_budget=thinking_budget,
+                        include_thoughts=True,
+                    ),
                 ),
             )
+            thinking = extract_thinking_tokens(response)
             result = json.loads(response.text)
             return {
                 "classification": result["classification"],
                 "chain_of_thought": result["chain_of_thought"],
+                "thinking": thinking,
             }
         except (json.JSONDecodeError, KeyError) as e:
             return {
                 "classification": "Error",
                 "chain_of_thought": f"Failed to parse response: {e}",
+                "thinking": "",
             }
         except Exception as e:
             if attempt < max_retries - 1:
@@ -151,11 +178,13 @@ def classify_text(client, model: str, system_prompt: str, text: str) -> dict:
                 return {
                     "classification": "Error",
                     "chain_of_thought": f"Failed after {max_retries} retries: {e}",
+                    "thinking": "",
                 }
 
 
 def process_csv(input_path: str, output_path: str, rubric_path: str,
-                model: str, client, cot_rubric_path: str | None = None) -> None:
+                model: str, client, cot_rubric_path: str | None = None,
+                thinking_budget: int = -1) -> None:
     rubric_text = load_rubric(rubric_path)
     system_prompt = build_system_prompt(rubric_text)
 
@@ -174,22 +203,25 @@ def process_csv(input_path: str, output_path: str, rubric_path: str,
     for i, row in enumerate(rows, start=1):
         text = row["text_to_evaluate"]
         print(f"Processing row {i}/{total}...")
-        result = classify_text(client, model, system_prompt, text)
+        result = classify_text(client, model, system_prompt, text,
+                               thinking_budget=thinking_budget)
         output_row = {
             "text_to_evaluate": text,
             "classification": result["classification"],
+            "thinking": result["thinking"],
             "chain_of_thought": result["chain_of_thought"],
         }
         if cot_system_prompt is not None:
             cot_result = evaluate_cot(
                 client, model, cot_system_prompt,
                 text, result["classification"], result["chain_of_thought"],
+                thinking=result["thinking"],
             )
             output_row["cot_verdict"] = cot_result["cot_verdict"]
             output_row["cot_judge_reasoning"] = cot_result["cot_judge_reasoning"]
         results.append(output_row)
 
-    fieldnames = ["text_to_evaluate", "classification", "chain_of_thought"]
+    fieldnames = ["text_to_evaluate", "classification", "thinking", "chain_of_thought"]
     if cot_system_prompt is not None:
         fieldnames += ["cot_verdict", "cot_judge_reasoning"]
 
@@ -217,6 +249,12 @@ def main():
                         help="Gemini model name")
     parser.add_argument("--cot-rubric", default=None,
                         help="Path to CoT judge rubric; enables the secondary judge when set")
+    parser.add_argument("--thinking-budget", type=int, default=-1,
+                        help=(
+                            "Thinking token budget for Gemini extended thinking. "
+                            "-1 = AUTOMATIC (model decides), 0 = disabled. "
+                            "Positive integer = fixed budget. Default: -1."
+                        ))
     args = parser.parse_args()
 
     load_dotenv()
@@ -226,7 +264,8 @@ def main():
 
     client = genai.Client(api_key=api_key)
     process_csv(args.input, args.output, args.rubric, args.model, client,
-                cot_rubric_path=args.cot_rubric)
+                cot_rubric_path=args.cot_rubric,
+                thinking_budget=args.thinking_budget)
 
 
 if __name__ == "__main__":
