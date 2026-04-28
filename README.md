@@ -65,16 +65,19 @@ python process_outputs.py
 ```
 
 **What it does:**
-- Loads `Outputs/output.csv` and extracts `id`, `target`, and `classification` columns
+- Loads `Outputs/output.csv` and extracts all relevant columns including CoT judge outputs
 - Converts to binary classification:
   - **Target (ground truth)**: `0.0` → "Not Toxic", all other values → "Toxic"
   - **Classification (prediction)**: "Not Toxic" stays unchanged, all other values → "Toxic"
 - Generates a confusion matrix and computes classification metrics (accuracy, precision, recall, F1-score)
+- Creates a CoT verdict distribution visualization showing alignment breakdown
 
 **Outputs:**
-- `Output_Analysis/Output_Analysis_Data.csv` — Processed binary classification data (id, target, classification)
+- `Output_Analysis/Output_Analysis_Data.csv` — Processed binary classification data with CoT columns (id, target, classification, thinking, cot_verdict, cot_judge_reasoning)
 - `Output_Analysis/confusion_matrix.png` — Confusion matrix heatmap visualization
 - `Output_Analysis/confusion_matrix_metrics.txt` — Classification metrics and confusion matrix summary
+- `Output_Analysis/cot_verdict_distribution.png` — Bar chart showing distribution of CoT verdict categories (Well-Aligned, Partially Aligned, Misaligned)
+- `Output_Analysis/cot_verdict_statistics.txt` — CoT verdict distribution statistics with counts and percentages
 
 ## Output Format
 
@@ -97,6 +100,23 @@ Two additional columns are appended:
 | `cot_judge_reasoning` | The secondary judge's explanation for its verdict |
 
 The CoT judge evaluates the `thinking` tokens (when present) rather than the `chain_of_thought` field, since thinking tokens represent genuine pre-output reasoning. It assesses reasoning across four dimensions: Classification Support, Rubric Grounding, Logical Consistency, and Evidence Use. It does not re-evaluate the original text for toxicity.
+
+## Binary Classification Output Format
+
+After post-processing, `Output_Analysis/Output_Analysis_Data.csv` contains the binary classification dataset with the following columns:
+
+| Column | Description |
+|---|---|
+| `id` | Record identifier |
+| `target` | Binary ground truth: "Not Toxic" or "Toxic" |
+| `classification` | Binary prediction: "Not Toxic" or "Toxic" |
+| `thinking` | Raw internal reasoning tokens from Gemini extended thinking |
+| `cot_verdict` | CoT judge verdict: "Well-Aligned", "Partially Aligned", or "Misaligned" |
+| `cot_judge_reasoning` | The secondary judge's explanation for its verdict |
+
+**Visualizations generated:**
+- **Confusion Matrix** (`confusion_matrix.png`) — Heatmap comparing target vs. classification predictions
+- **CoT Verdict Distribution** (`cot_verdict_distribution.png`) — Bar chart showing alignment verdict breakdown across the dataset
 
 ## How Extended Thinking Works
 
@@ -127,9 +147,11 @@ python -m pytest tests/ -v
 ├── Outputs/
 │   └── output.csv         # Generated classifications (raw outputs)
 ├── Output_Analysis/       # Binary classification analysis outputs
-│   ├── Output_Analysis_Data.csv      # Processed binary classification data
+│   ├── Output_Analysis_Data.csv      # Processed binary classification data (with CoT columns)
 │   ├── confusion_matrix.png          # Confusion matrix visualization
-│   └── confusion_matrix_metrics.txt  # Classification metrics summary
+│   ├── confusion_matrix_metrics.txt  # Classification metrics summary
+│   ├── cot_verdict_distribution.png  # CoT verdict distribution visualization
+│   └── cot_verdict_statistics.txt    # CoT verdict statistics and percentages
 └── tests/
     └── test_classifier.py # Unit tests (mocked)
 ```
