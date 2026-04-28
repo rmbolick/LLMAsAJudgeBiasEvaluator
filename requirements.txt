@@ -1,3 +1,7 @@
 google-genai>=1.10
 python-dotenv
 pytest
+seaborn
+matplotlib
+pandas
+scikit-learn

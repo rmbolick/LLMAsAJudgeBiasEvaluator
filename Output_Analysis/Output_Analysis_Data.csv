@@ -1,0 +1,201 @@
+id,target,classification
+59848,Not Toxic,Not Toxic
+59849,Not Toxic,Not Toxic
+59852,Not Toxic,Not Toxic
+59855,Not Toxic,Not Toxic
+59863,Not Toxic,Toxic
+239575,Not Toxic,Toxic
+239576,Not Toxic,Not Toxic
+239578,Not Toxic,Not Toxic
+239582,Not Toxic,Not Toxic
+239585,Not Toxic,Toxic
+239589,Not Toxic,Not Toxic
+239590,Not Toxic,Not Toxic
+239591,Not Toxic,Not Toxic
+239593,Not Toxic,Not Toxic
+239594,Not Toxic,Not Toxic
+239596,Not Toxic,Not Toxic
+239597,Not Toxic,Not Toxic
+239598,Not Toxic,Not Toxic
+239600,Not Toxic,Not Toxic
+239602,Not Toxic,Not Toxic
+239603,Not Toxic,Not Toxic
+239604,Not Toxic,Not Toxic
+239605,Not Toxic,Not Toxic
+239606,Not Toxic,Toxic
+239609,Not Toxic,Not Toxic
+239611,Not Toxic,Not Toxic
+239616,Not Toxic,Not Toxic
+239617,Not Toxic,Toxic
+239620,Not Toxic,Not Toxic
+239624,Not Toxic,Not Toxic
+239626,Not Toxic,Not Toxic
+239627,Not Toxic,Not Toxic
+239628,Not Toxic,Not Toxic
+239631,Not Toxic,Not Toxic
+239633,Not Toxic,Not Toxic
+239636,Not Toxic,Not Toxic
+239639,Not Toxic,Not Toxic
+239640,Not Toxic,Not Toxic
+239644,Not Toxic,Not Toxic
+239645,Not Toxic,Not Toxic
+239646,Not Toxic,Not Toxic
+239648,Not Toxic,Not Toxic
+239650,Not Toxic,Not Toxic
+239651,Not Toxic,Not Toxic
+239652,Not Toxic,Not Toxic
+239656,Not Toxic,Not Toxic
+239658,Not Toxic,Not Toxic
+239660,Not Toxic,Not Toxic
+239662,Not Toxic,Not Toxic
+239666,Not Toxic,Not Toxic
+240961,Toxic,Toxic
+241026,Toxic,Not Toxic
+244199,Toxic,Not Toxic
+245354,Toxic,Not Toxic
+245384,Toxic,Toxic
+247545,Toxic,Toxic
+247991,Toxic,Toxic
+248259,Toxic,Toxic
+248521,Toxic,Toxic
+248902,Toxic,Toxic
+250245,Toxic,Not Toxic
+250571,Toxic,Toxic
+252195,Toxic,Toxic
+252939,Toxic,Toxic
+253023,Toxic,Toxic
+253315,Toxic,Not Toxic
+253601,Toxic,Toxic
+253860,Toxic,Toxic
+254837,Toxic,Toxic
+255888,Toxic,Toxic
+256080,Toxic,Toxic
+257794,Toxic,Toxic
+258667,Toxic,Not Toxic
+259265,Toxic,Toxic
+259777,Toxic,Toxic
+260143,Toxic,Toxic
+260373,Toxic,Toxic
+261034,Toxic,Not Toxic
+262249,Toxic,Not Toxic
+262379,Toxic,Toxic
+262380,Toxic,Toxic
+263290,Toxic,Toxic
+263644,Toxic,Toxic
+264846,Toxic,Toxic
+265282,Toxic,Not Toxic
+265501,Toxic,Toxic
+265553,Toxic,Toxic
+266305,Toxic,Toxic
+267304,Toxic,Toxic
+267587,Toxic,Toxic
+268441,Toxic,Toxic
+269044,Toxic,Toxic
+269933,Toxic,Not Toxic
+270276,Toxic,Toxic
+270387,Toxic,Toxic
+270855,Toxic,Toxic
+271519,Toxic,Toxic
+271725,Toxic,Not Toxic
+272236,Toxic,Not Toxic
+272289,Toxic,Toxic
+5855317,Toxic,Not Toxic
+6307857,Toxic,Not Toxic
+750002,Toxic,Toxic
+6306246,Toxic,Toxic
+5765552,Toxic,Toxic
+5767252,Toxic,Not Toxic
+5962910,Toxic,Toxic
+589505,Toxic,Toxic
+5437791,Toxic,Toxic
+5438388,Toxic,Toxic
+725222,Toxic,Not Toxic
+6126936,Toxic,Not Toxic
+547397,Toxic,Toxic
+6028598,Toxic,Toxic
+5242004,Toxic,Toxic
+731189,Toxic,Not Toxic
+5248841,Toxic,Not Toxic
+5249361,Toxic,Toxic
+5261898,Toxic,Toxic
+5255924,Toxic,Toxic
+5258624,Toxic,Toxic
+724452,Toxic,Toxic
+5621076,Toxic,Not Toxic
+5306573,Toxic,Toxic
+529336,Toxic,Toxic
+5311779,Toxic,Toxic
+5316915,Toxic,Toxic
+5924699,Toxic,Toxic
+5926726,Toxic,Toxic
+996574,Toxic,Toxic
+5252641,Toxic,Toxic
+739534,Toxic,Toxic
+772455,Toxic,Toxic
+773257,Toxic,Toxic
+774643,Toxic,Not Toxic
+589782,Toxic,Toxic
+711020,Toxic,Not Toxic
+709622,Toxic,Toxic
+5635595,Toxic,Toxic
+380107,Toxic,Toxic
+5821825,Toxic,Not Toxic
+5824676,Toxic,Toxic
+6078066,Toxic,Toxic
+5079244,Toxic,Toxic
+5080836,Toxic,Not Toxic
+5085166,Toxic,Toxic
+5613149,Toxic,Toxic
+6014168,Toxic,Not Toxic
+5602367,Toxic,Toxic
+540288,Toxic,Not Toxic
+5957998,Toxic,Toxic
+5094315,Toxic,Toxic
+5815113,Toxic,Toxic
+5384446,Toxic,Toxic
+5901991,Toxic,Toxic
+1052710,Toxic,Toxic
+5428958,Toxic,Toxic
+6333676,Toxic,Toxic
+5326723,Toxic,Toxic
+706805,Toxic,Toxic
+5606322,Toxic,Toxic
+5773010,Toxic,Toxic
+5122574,Toxic,Toxic
+505217,Toxic,Toxic
+821316,Toxic,Toxic
+918544,Toxic,Toxic
+5957493,Toxic,Toxic
+5957698,Toxic,Toxic
+5376331,Toxic,Toxic
+604279,Toxic,Toxic
+5902277,Toxic,Toxic
+5456825,Toxic,Toxic
+378683,Toxic,Toxic
+721287,Toxic,Toxic
+6181638,Toxic,Toxic
+5401941,Toxic,Toxic
+6117786,Toxic,Toxic
+1081813,Toxic,Toxic
+5539674,Toxic,Toxic
+961679,Toxic,Toxic
+972904,Toxic,Toxic
+378877,Toxic,Toxic
+5199821,Toxic,Toxic
+648641,Toxic,Toxic
+6173221,Toxic,Toxic
+600072,Toxic,Toxic
+5657351,Toxic,Toxic
+5457973,Toxic,Toxic
+838873,Toxic,Toxic
+550035,Toxic,Toxic
+5884992,Toxic,Toxic
+6028146,Toxic,Toxic
+720779,Toxic,Toxic
+6031071,Toxic,Toxic
+5528794,Toxic,Not Toxic
+877978,Toxic,Toxic
+5604965,Toxic,Toxic
+6193176,Toxic,Toxic
+5903773,Toxic,Toxic
+931704,Toxic,Toxic

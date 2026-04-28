@@ -56,6 +56,26 @@ python classifier.py --thinking-budget 0
 python classifier.py --input data/my_texts.csv --output data/results.csv --cot-rubric CoT_Judge_Rubric.md
 ```
 
+## Post-Processing: Binary Classification Analysis
+
+After running the classifier, use `process_outputs.py` to transform the raw outputs into binary classification format and generate evaluation metrics:
+
+```bash
+python process_outputs.py
+```
+
+**What it does:**
+- Loads `Outputs/output.csv` and extracts `id`, `target`, and `classification` columns
+- Converts to binary classification:
+  - **Target (ground truth)**: `0.0` → "Not Toxic", all other values → "Toxic"
+  - **Classification (prediction)**: "Not Toxic" stays unchanged, all other values → "Toxic"
+- Generates a confusion matrix and computes classification metrics (accuracy, precision, recall, F1-score)
+
+**Outputs:**
+- `Output_Analysis/Output_Analysis_Data.csv` — Processed binary classification data (id, target, classification)
+- `Output_Analysis/confusion_matrix.png` — Confusion matrix heatmap visualization
+- `Output_Analysis/confusion_matrix_metrics.txt` — Classification metrics and confusion matrix summary
+
 ## Output Format
 
 ### Toxicity classifier only
@@ -96,6 +116,7 @@ python -m pytest tests/ -v
 
 ```
 ├── classifier.py          # Main pipeline script
+├── process_outputs.py     # Binary classification output mapper and confusion matrix generator
 ├── Rubric.md              # Toxicity classification rubric
 ├── CoT_Judge_Rubric.md    # Chain-of-thought alignment judge rubric
 ├── requirements.txt       # Python dependencies
@@ -104,7 +125,11 @@ python -m pytest tests/ -v
 ├── Inputs/
 │   └── input.csv          # Input texts to classify
 ├── Outputs/
-│   └── output.csv         # Generated classifications
+│   └── output.csv         # Generated classifications (raw outputs)
+├── Output_Analysis/       # Binary classification analysis outputs
+│   ├── Output_Analysis_Data.csv      # Processed binary classification data
+│   ├── confusion_matrix.png          # Confusion matrix visualization
+│   └── confusion_matrix_metrics.txt  # Classification metrics summary
 └── tests/
     └── test_classifier.py # Unit tests (mocked)
 ```

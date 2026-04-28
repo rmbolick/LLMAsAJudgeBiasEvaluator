@@ -1,0 +1,19 @@
+============================================================
+BINARY CLASSIFICATION METRICS
+============================================================
+
+CONFUSION MATRIX:
+                   Predicted: Not Toxic  Predicted: Toxic
+Actual: Not Toxic                    45                 5
+Actual: Toxic                        27               123
+
+------------------------------------------------------------
+
+CLASSIFICATION METRICS:
+Total Samples: 200
+Accuracy:      0.8400
+Precision:     0.8770
+Recall:        0.8400
+F1-Score:      0.8481
+
+============================================================
