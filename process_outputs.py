@@ -8,6 +8,7 @@ This script transforms raw LLM output data into binary classification format:
 Outputs:
 - Processed data CSV: Output_Analysis/Output_Analysis_Data.csv
 - Confusion matrix visualization: Output_Analysis/confusion_matrix.png
+- CoT verdict distribution: Output_Analysis/cot_verdict_distribution.png
 - Classification metrics: Output_Analysis/confusion_matrix_metrics.txt
 """
 
@@ -23,13 +24,13 @@ import seaborn as sns
 
 def load_output_data(csv_path: str) -> pd.DataFrame:
     """
-    Load output CSV file.
+    Load output CSV file with all relevant columns.
     
     Args:
         csv_path: Path to the output.csv file
         
     Returns:
-        DataFrame with columns: id, target, classification
+        DataFrame with columns: id, target, classification, thinking, cot_verdict, cot_judge_reasoning
         
     Raises:
         FileNotFoundError: If CSV file does not exist
@@ -38,7 +39,7 @@ def load_output_data(csv_path: str) -> pd.DataFrame:
         raise FileNotFoundError(f"CSV file not found: {csv_path}")
     
     df = pd.read_csv(csv_path)
-    return df[['id', 'target', 'classification']].copy()
+    return df[['id', 'target', 'classification', 'thinking', 'cot_verdict', 'cot_judge_reasoning']].copy()
 
 
 def map_target_to_binary(target_value: float) -> str:
@@ -75,28 +76,29 @@ def map_classification_to_binary(classification_value: str) -> str:
 
 def process_and_save_data(input_path: str, output_path: str) -> pd.DataFrame:
     """
-    Load, process, and save binary classification data.
+    Load, process, and save binary classification data with CoT columns.
     
     Args:
         input_path: Path to input output.csv file
         output_path: Path to save processed data
         
     Returns:
-        Processed DataFrame with binary mapped values
+        Processed DataFrame with binary mapped values and CoT columns
     """
     # Load data
     df = load_output_data(input_path)
     
-    # Apply binary mapping
+    # Apply binary mapping to target and classification
     df['target'] = df['target'].apply(map_target_to_binary)
     df['classification'] = df['classification'].apply(map_classification_to_binary)
     
     # Ensure output directory exists
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     
-    # Save processed data
+    # Save processed data (includes thinking, cot_verdict, cot_judge_reasoning)
     df.to_csv(output_path, index=False)
     print(f"✓ Processed data saved to: {output_path}")
+    print(f"  - Columns: {', '.join(df.columns.tolist())}")
     
     return df
 
@@ -184,6 +186,70 @@ def generate_confusion_matrix(
     return cm_df, metrics
 
 
+def visualize_cot_verdict(df: pd.DataFrame, output_dir: str) -> dict:
+    """
+    Generate and save CoT verdict distribution visualization.
+    
+    Args:
+        df: DataFrame with 'cot_verdict' column
+        output_dir: Directory to save visualization and statistics
+        
+    Returns:
+        Dictionary with verdict counts and statistics
+    """
+    # Count cot_verdict values
+    verdict_counts = df['cot_verdict'].value_counts().sort_values(ascending=False)
+    verdict_stats = {
+        'total': len(df),
+        'counts': verdict_counts.to_dict(),
+        'percentages': (verdict_counts / len(df) * 100).to_dict()
+    }
+    
+    # Create bar chart
+    plt.figure(figsize=(10, 6))
+    colors = ['#2ecc71', '#f39c12', '#e74c3c']  # Green, Orange, Red
+    bars = plt.bar(verdict_counts.index, verdict_counts.values, color=colors, edgecolor='black', linewidth=1.5)
+    
+    # Add value labels on bars
+    for bar in bars:
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(height)}',
+                ha='center', va='bottom', fontsize=11, fontweight='bold')
+    
+    plt.title('CoT Verdict Distribution', fontsize=14, fontweight='bold')
+    plt.xlabel('Verdict Category', fontsize=12)
+    plt.ylabel('Count', fontsize=12)
+    plt.grid(axis='y', alpha=0.3, linestyle='--')
+    plt.xticks(rotation=0)
+    plt.tight_layout()
+    
+    # Save visualization
+    os.makedirs(output_dir, exist_ok=True)
+    cot_verdict_path = os.path.join(output_dir, 'cot_verdict_distribution.png')
+    plt.savefig(cot_verdict_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"✓ CoT verdict distribution saved to: {cot_verdict_path}")
+    
+    # Save statistics to metrics file
+    metrics_text_path = os.path.join(output_dir, 'cot_verdict_statistics.txt')
+    with open(metrics_text_path, 'w') as f:
+        f.write("=" * 60 + "\n")
+        f.write("COT VERDICT DISTRIBUTION STATISTICS\n")
+        f.write("=" * 60 + "\n\n")
+        f.write(f"Total Records: {verdict_stats['total']}\n\n")
+        f.write("VERDICT COUNTS:\n")
+        f.write("-" * 60 + "\n")
+        for verdict, count in verdict_stats['counts'].items():
+            percentage = verdict_stats['percentages'][verdict]
+            f.write(f"{verdict:20s}: {count:6d} ({percentage:6.2f}%)\n")
+        f.write("\n" + "=" * 60 + "\n")
+    
+    print(f"✓ CoT verdict statistics saved to: {metrics_text_path}")
+    
+    return verdict_stats
+
+
 def main() -> None:
     """Main orchestration function."""
     # Define paths
@@ -206,6 +272,16 @@ def main() -> None:
     print(f"  Precision: {metrics['precision']:.4f}")
     print(f"  Recall:    {metrics['recall']:.4f}")
     print(f"  F1-Score:  {metrics['f1']:.4f}")
+    
+    # Generate CoT verdict visualization
+    print("\nGenerating CoT verdict visualization...")
+    verdict_stats = visualize_cot_verdict(df, str(output_analysis_dir))
+    
+    print("\nCoT Verdict Distribution:")
+    for verdict, count in verdict_stats['counts'].items():
+        percentage = verdict_stats['percentages'][verdict]
+        print(f"  {verdict:20s}: {count:6d} ({percentage:6.2f}%)")
+    
     print("\n✓ Process completed successfully!")
 
 
