@@ -201,11 +201,15 @@ def process_csv(input_path: str, output_path: str, rubric_path: str,
     results = []
 
     for i, row in enumerate(rows, start=1):
+        unique_id = row["id"]
         text = row["text_to_evaluate"]
+        target = row["target"]
         print(f"Processing row {i}/{total}...")
         result = classify_text(client, model, system_prompt, text,
                                thinking_budget=thinking_budget)
         output_row = {
+            "id": unique_id,
+            "target": target,
             "text_to_evaluate": text,
             "classification": result["classification"],
             "thinking": result["thinking"],
@@ -221,7 +225,7 @@ def process_csv(input_path: str, output_path: str, rubric_path: str,
             output_row["cot_judge_reasoning"] = cot_result["cot_judge_reasoning"]
         results.append(output_row)
 
-    fieldnames = ["text_to_evaluate", "classification", "thinking", "chain_of_thought"]
+    fieldnames = ["id", "target", "text_to_evaluate", "classification", "thinking", "chain_of_thought"]
     if cot_system_prompt is not None:
         fieldnames += ["cot_verdict", "cot_judge_reasoning"]
 
