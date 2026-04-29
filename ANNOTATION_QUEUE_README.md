@@ -21,7 +21,12 @@ Initialize the annotation queue from your processed data:
 python annotation_queue.py --action init
 ```
 
-This creates `annotation_queue.db` and loads all records from `Output_Analysis_Data.csv`.
+This creates `annotation_queue.db` and loads all records from `sample_for_annotations.csv` (default).
+
+**To use a different input file:**
+```bash
+python annotation_queue.py --action init --csv "path/to/your/file.csv"
+```
 
 **Output example:**
 ```
@@ -59,24 +64,33 @@ python annotate.py --reviewer "jane_doe"
 - `--reviewer NAME` — Set reviewer name/ID (default: annotator_1)
 - `--count N` — Review only N records before exiting (default: unlimited)
 - `--db PATH` — Custom database path (default: annotation_queue.db)
+- `--csv PATH` — Custom input CSV file (default: sample_for_annotations.csv)
 
 ### What Happens During Review
 
-For each record, you'll see:
+**Persistent Data Context:** At the top of each screen, you'll see a compact summary of the core data:
+- **id** — Record identifier
+- **target** — Ground truth toxicity label
+- **classification** — Model's predicted label
+- **thinking** — Full LLM reasoning (untruncated, wrapped to terminal width)
+- **text_to_evaluate** — The original text being evaluated
+- **cot_verdict** — AI judge's verdict (Well-Aligned / Partially Aligned / Misaligned)
 
-1. **Classification Info**
-   - Ground truth label (target)
-   - Model prediction (classification)
-   - Whether they match
+This data context persists throughout all questions so you have full visibility without needing to reference back.
 
-2. **AI Judge Verdict**
-   - The verdict assigned by the CoT judge (Well-Aligned / Partially Aligned / Misaligned)
+**For each record, you'll assess:**
 
-3. **LLM Thinking Tokens**
-   - Extended reasoning from the language model (first 600 chars shown)
+1. **Classification Support**
+   - Does the reasoning justify the label?
 
-4. **AI Judge's Explanation**
-   - Why the AI judge assigned that verdict (first 500 chars shown)
+2. **Rubric Grounding**
+   - Does it reference toxicity criteria?
+
+3. **Logical Consistency**
+   - Is reasoning internally coherent?
+
+4. **Evidence Use**
+   - Does it cite specific text evidence?
 
 5. **Rubric Assessment** (4 dimensions, enter 1-3 for each)
    - **Classification Support:** Does reasoning justify the label?
@@ -84,7 +98,7 @@ For each record, you'll see:
    - **Logical Consistency:** Is reasoning internally coherent?
    - **Evidence Use:** Does it cite specific text evidence?
 
-   Input options:
+   **Input options:**
    ```
    1 = Weak / Not adequately addressed
    2 = Adequate / Partially addressed
@@ -93,6 +107,8 @@ For each record, you'll see:
    ```
 
 6. **Overall Verdict** (enter 1-3)
+   
+   After reviewing all dimensions, assess the overall alignment:
    ```
    1 = Well-Aligned       (all 4 dimensions strong, clearly justifies classification)
    2 = Partially Aligned  (broadly correct but has gaps)
@@ -232,12 +248,13 @@ Displays progress across all reviewers in real-time.
 ## Data Flow
 
 ```
-Input: Output_Analysis_Data.csv
+Input: sample_for_annotations.csv (default) or custom CSV
   ↓
 Initialize: python annotation_queue.py --action init
   ↓ Creates: annotation_queue.db
   ↓
 Review: python annotate.py --reviewer "alice"
+  ↓ Displays: Full untruncated data + persistent context
   ↓ Updates: queue table, audit_log table
   ↓
 Analyze: python export_results.py --action dashboard

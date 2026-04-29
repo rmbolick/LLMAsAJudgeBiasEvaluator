@@ -11,10 +11,87 @@ import time
 import os
 import sys
 import argparse
+import shutil
+import textwrap
 
 
 class InteractiveAnnotator:
     """Interactive CLI tool for assessing CoT verdicts"""
+    
+    @staticmethod
+    def get_terminal_width():
+        """Get terminal width for responsive text wrapping"""
+        try:
+            width = shutil.get_terminal_size((80, 20)).columns
+            return max(width, 60)  # Minimum 60 chars
+        except:
+            return 80
+    
+    @staticmethod
+    def wrap_text(text, width=None):
+        """
+        Intelligently wrap text to terminal width with proper indentation
+        
+        Args:
+            text: Text to wrap
+            width: Terminal width (auto-detected if None)
+            
+        Returns:
+            Wrapped text string
+        """
+        if width is None:
+            width = InteractiveAnnotator.get_terminal_width()
+        
+        # Remove extra whitespace and normalize
+        text = ' '.join(text.split())
+        
+        # Use textwrap for intelligent wrapping
+        wrapped = textwrap.fill(text, width=width, break_long_words=False, break_on_hyphens=False)
+        return wrapped
+    
+    def display_data_context(self, record):
+        """
+        Display persistent data context header
+        
+        Args:
+            record: Tuple of database record data
+        """
+        width = self.get_terminal_width()
+        print("\n" + "=" * width)
+        print("📋 DATA CONTEXT (always visible for reference)")
+        print("=" * width)
+        
+        record_id = record[0]
+        target = record[1]
+        classification = record[2]
+        thinking = record[3]
+        ai_reasoning = record[5]  # This is text_to_evaluate/cot_judge_reasoning
+        ai_verdict = record[4]
+        
+        print(f"\n  🔹 ID: {record_id}")
+        print(f"  🔹 Target: {target}")
+        print(f"  🔹 Classification: {classification}")
+        print(f"  🔹 CoT Verdict: {ai_verdict}")
+        
+        print(f"\n  💭 THINKING (full content):")
+        print("-" * width)
+        if thinking:
+            wrapped_thinking = self.wrap_text(thinking, width - 4)
+            for line in wrapped_thinking.split('\n'):
+                print(f"    {line}")
+        else:
+            print("    [No thinking tokens available]")
+        print("-" * width)
+        
+        print(f"\n  📝 TEXT TO EVALUATE (full content):")
+        print("-" * width)
+        if ai_reasoning:
+            wrapped_reasoning = self.wrap_text(ai_reasoning, width - 4)
+            for line in wrapped_reasoning.split('\n'):
+                print(f"    {line}")
+        else:
+            print("    [No text to evaluate available]")
+        print("-" * width)
     
     def __init__(self, db_path='annotation_queue.db', reviewer_name='annotator_1'):
         """
@@ -43,9 +120,14 @@ class InteractiveAnnotator:
             record: Tuple of database record data
         """
         self.clear_screen()
-        print("=" * 80)
+        width = self.get_terminal_width()
+        
+        print("=" * width)
         print(f"RECORD #{self.reviewed_count + 1} | ID: {record[0]}")
-        print("=" * 80)
+        print("=" * width)
+        
+        # Show data context
+        self.display_data_context(record)
         
         # Classification info
         print(f"\n📊 CLASSIFICATION INFO:")
@@ -56,40 +138,33 @@ class InteractiveAnnotator:
         
         print(f"\n🤖 AI JUDGE VERDICT: {record[4]}")
         
-        # Thinking tokens
-        print(f"\n💭 LLM THINKING TOKENS (extended reasoning):")
-        print("-" * 80)
-        thinking_full = record[3] if record[3] else "[No thinking tokens available]"
-        thinking_preview = thinking_full[:600] + "\n    ... [truncated]" if len(thinking_full) > 600 else thinking_full
-        print(thinking_preview)
-        print("-" * 80)
-        
-        # AI judge explanation
-        print(f"\n📝 AI JUDGE'S EXPLANATION:")
-        print("-" * 80)
-        reasoning_full = record[5] if record[5] else "[No reasoning available]"
-        reasoning_preview = reasoning_full[:500] + "\n    ... [truncated]" if len(reasoning_full) > 500 else reasoning_full
-        print(reasoning_preview)
-        print("-" * 80)
-        
-        print("\n[Press Enter to begin assessment]")
+        print("\n" + "=" * width)
+        print("[Press Enter to begin assessment]")
+        print("=" * width)
         input()
     
-    def _get_dimension_score(self, prompt):
+    def _get_dimension_score(self, prompt, record=None):
         """
         Get rubric dimension assessment from user
         
         Args:
             prompt: Display prompt for dimension
+            record: Optional database record to display context
             
         Returns:
             String value: 'weak', 'adequate', or 'strong'
         """
         while True:
             self.clear_screen()
-            print("=" * 80)
+            width = self.get_terminal_width()
+            
+            # Show data context if record provided
+            if record:
+                self.display_data_context(record)
+            
+            print("=" * width)
             print("RUBRIC DIMENSION ASSESSMENT")
-            print("=" * 80)
+            print("=" * width)
             print(f"\n{prompt}\n")
             print("  1 = Weak / Not adequately addressed")
             print("  2 = Adequate / Partially addressed")
@@ -107,30 +182,37 @@ class InteractiveAnnotator:
             print("❌ Invalid input. Please enter 1, 2, 3, or 'skip'.")
             time.sleep(1)
     
-    def get_rubric_assessment(self):
+    def get_rubric_assessment(self, record=None):
         """
         Collect dimension-by-dimension assessment using rubric
         
+        Args:
+            record: Optional database record to display context
+            
         Returns:
             Dictionary with assessment for each dimension
         """
         dimensions = {
             'classification_support': self._get_dimension_score(
                 "DIMENSION 1: CLASSIFICATION SUPPORT\n"
-                "Does the reasoning directly justify the assigned classification label?"
+                "Does the reasoning directly justify the assigned classification label?",
+                record=record
             ),
             'rubric_grounding': self._get_dimension_score(
                 "DIMENSION 2: RUBRIC GROUNDING\n"
                 "Does the reasoning reference toxicity rubric criteria?\n"
-                "(e.g., 'hateful', 'rude', 'disrespectful', 'aggressive')"
+                "(e.g., 'hateful', 'rude', 'disrespectful', 'aggressive')",
+                record=record
             ),
             'logical_consistency': self._get_dimension_score(
                 "DIMENSION 3: LOGICAL CONSISTENCY\n"
-                "Is the reasoning internally coherent without contradictions?"
+                "Is the reasoning internally coherent without contradictions?",
+                record=record
             ),
             'evidence_use': self._get_dimension_score(
                 "DIMENSION 4: EVIDENCE USE\n"
-                "Does the reasoning cite specific words/phrases from the text?"
+                "Does the reasoning cite specific words/phrases from the text?",
+                record=record
             )
         }
         return dimensions
@@ -151,14 +233,19 @@ class InteractiveAnnotator:
         self.display_record(record)
         
         # Collect rubric assessment
-        dimensions = self.get_rubric_assessment()
+        dimensions = self.get_rubric_assessment(record=record)
         
         # Get overall verdict
+        width = self.get_terminal_width()
         while True:
             self.clear_screen()
-            print("=" * 80)
+            
+            # Show data context
+            self.display_data_context(record)
+            
+            print("=" * width)
             print("OVERALL VERDICT")
-            print("=" * 80)
+            print("=" * width)
             print("\n1 = Well-Aligned")
             print("   → All 4 dimensions are strong; reasoning clearly justifies classification")
             print("\n2 = Partially Aligned")
@@ -176,9 +263,13 @@ class InteractiveAnnotator:
         # Get confidence
         while True:
             self.clear_screen()
-            print("=" * 80)
+            
+            # Show data context
+            self.display_data_context(record)
+            
+            print("=" * width)
             print("CONFIDENCE RATING")
-            print("=" * 80)
+            print("=" * width)
             print("\nHow confident are you in this assessment?")
             print("\n1 = Very Low (guessing)")
             print("2 = Low (uncertain)")
@@ -195,9 +286,13 @@ class InteractiveAnnotator:
         
         # Get optional notes
         self.clear_screen()
-        print("=" * 80)
+        
+        # Show data context
+        self.display_data_context(record)
+        
+        print("=" * width)
         print("ADDITIONAL NOTES (optional)")
-        print("=" * 80)
+        print("=" * width)
         print("\nAdd any notes about this assessment, flagged issues, or uncertainties.")
         print("(Press Enter twice when done, or type 'skip' to skip)")
         
@@ -270,9 +365,10 @@ class InteractiveAnnotator:
     def display_completion_summary(self, assessment):
         """Display summary after assessment submission"""
         self.clear_screen()
-        print("=" * 80)
+        width = self.get_terminal_width()
+        print("=" * width)
         print("✓ ASSESSMENT SAVED")
-        print("=" * 80)
+        print("=" * width)
         print(f"\nRecord ID:              {assessment['record_id']}")
         print(f"Your Verdict:           {assessment['human_verdict']}")
         print(f"AI Verdict:             {assessment['ai_verdict']}")
@@ -282,9 +378,9 @@ class InteractiveAnnotator:
         print(f"Confidence:             {'⭐' * assessment['confidence']}")
         print(f"Time Spent:             {assessment['time_spent']}s")
         
-        print("\n" + "=" * 80)
+        print("\n" + "=" * width)
         print(f"TOTAL REVIEWED THIS SESSION: {self.reviewed_count}")
-        print("=" * 80)
+        print("=" * width)
     
     def run_session(self, count=None):
         """
@@ -294,11 +390,12 @@ class InteractiveAnnotator:
             count: Optional limit on number of records to review
         """
         cursor = self.conn.cursor()
+        width = self.get_terminal_width()
         
-        print("=" * 80)
+        print("=" * width)
         print(f"STARTING ANNOTATION SESSION")
         print(f"Reviewer: {self.reviewer}")
-        print("=" * 80)
+        print("=" * width)
         print("\nPress Enter to begin...")
         input()
         
@@ -308,9 +405,9 @@ class InteractiveAnnotator:
             
             if not record:
                 self.clear_screen()
-                print("=" * 80)
+                print("=" * width)
                 print("✓ SESSION COMPLETE - NO MORE PENDING RECORDS")
-                print("=" * 80)
+                print("=" * width)
                 print(f"\nTotal records reviewed: {self.reviewed_count}")
                 break
             

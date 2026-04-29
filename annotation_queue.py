@@ -14,7 +14,7 @@ import argparse
 class AnnotationQueue:
     """Manages SQLite-based annotation queue for CoT verdict assessment"""
     
-    def __init__(self, db_path='annotation_queue.db', csv_path='Output_Analysis_Data.csv'):
+    def __init__(self, db_path='annotation_queue.db', csv_path='Output_Analysis/sample_for_annotations.csv'):
         """
         Initialize queue manager
         
@@ -85,7 +85,7 @@ class AnnotationQueue:
                 row['classification'],
                 row['thinking'],
                 row['cot_verdict'],
-                row['cot_judge_reasoning']
+                row['text_to_evaluate']
             ))
         
         self.conn.commit()
@@ -188,7 +188,7 @@ def main():
     )
     parser.add_argument(
         '--csv',
-        default='Output_Analysis/Output_Analysis_Data.csv',
+        default='Output_Analysis/sample_for_annotations.csv',
         help='Path to input CSV file'
     )
     
