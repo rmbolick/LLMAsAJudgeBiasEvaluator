@@ -1,0 +1,35 @@
+id,target,classification,ai_verdict,human_verdict,verdict_match,confidence,time_spent_seconds,reviewer,classification_support,rubric_grounding,logical_consistency,evidence_use,notes,completed_at
+59848,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,157,Niall,strong,strong,strong,strong,,2026-04-29T14:56:59.152886
+59849,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,79,Niall,strong,strong,strong,strong,,2026-04-29T14:58:28.876390
+59852,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,38,Niall,strong,strong,strong,strong,,2026-04-29T14:59:10.335121
+59855,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,42,Niall,strong,strong,strong,strong,,2026-04-29T14:59:56.793776
+59863,Not Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,48,Niall,strong,strong,strong,strong,,2026-04-29T15:00:46.764146
+239575,Not Toxic,Toxic,Well-Aligned,Well-Aligned,1,4,165,Niall,strong,strong,strong,strong,,2026-04-29T15:03:33.911398
+239576,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,42,Niall,strong,strong,strong,strong,,2026-04-29T15:04:20.573300
+239578,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,20,Niall,strong,strong,strong,strong,,2026-04-29T15:04:42.075419
+239582,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,34,Niall,strong,strong,strong,strong,,2026-04-29T15:05:17.957908
+239585,Not Toxic,Toxic,Well-Aligned,Well-Aligned,1,4,42,Niall,strong,strong,strong,strong,,2026-04-29T15:06:02.376748
+239589,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,4,118,Niall,strong,strong,strong,strong,,2026-04-29T15:08:02.389415
+239590,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,40,Niall,strong,strong,strong,strong,,2026-04-29T15:08:45.972549
+239591,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,4,161,Niall,strong,strong,strong,strong,,2026-04-29T15:11:31.552399
+239593,Not Toxic,Not Toxic,Misaligned,Well-Aligned,0,5,33,Niall,strong,strong,strong,strong,,2026-04-29T15:12:08.395589
+239594,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,21,Niall,strong,strong,strong,strong,,2026-04-29T15:12:31.837345
+239596,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,49,Niall,strong,strong,strong,strong,,2026-04-29T15:13:22.003792
+239597,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,188,Niall,strong,strong,strong,strong,,2026-04-29T15:16:31.773115
+239598,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,28,Niall,strong,strong,strong,strong,,2026-04-29T15:17:02.266313
+239600,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,45,Niall,strong,strong,strong,strong,,2026-04-29T15:17:49.899490
+239602,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,147,Niall,strong,strong,strong,strong,,2026-04-29T15:20:19.537414
+239603,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,50,Niall,strong,strong,strong,strong,,2026-04-29T15:21:11.611460
+239604,Not Toxic,Not Toxic,Partially Aligned,Partially Aligned,1,4,72,Niall,strong,strong,adequate,adequate,,2026-04-29T15:22:25.254015
+239626,Not Toxic,Not Toxic,Misaligned,Misaligned,1,2,92,Niall,weak,weak,weak,weak,,2026-04-29T15:24:02.194245
+239660,Not Toxic,Not Toxic,Partially Aligned,Misaligned,0,2,34,Niall,weak,weak,weak,weak,,2026-04-29T15:24:54.420956
+239666,Not Toxic,Not Toxic,Misaligned,Misaligned,1,2,21,Niall,weak,weak,weak,weak,,2026-04-29T15:25:17.152478
+241026,Toxic,Not Toxic,Partially Aligned,Misaligned,0,2,37,Niall,weak,weak,weak,weak,,2026-04-29T15:25:55.301443
+245354,Toxic,Not Toxic,Misaligned,Misaligned,1,2,19,Niall,weak,weak,weak,weak,,2026-04-29T15:26:22.760206
+245384,Toxic,Toxic,Partially Aligned,Misaligned,0,2,31,Niall,weak,weak,weak,weak,,2026-04-29T15:26:55.712722
+247545,Toxic,Toxic,Misaligned,Misaligned,1,2,14,Niall,weak,weak,weak,weak,,2026-04-29T15:27:11.563859
+253860,Toxic,Toxic,Misaligned,Misaligned,1,1,15,Niall,weak,weak,weak,weak,,2026-04-29T15:27:28.104864
+270276,Toxic,Toxic,Misaligned,Misaligned,1,2,16,Niall,weak,weak,weak,weak,,2026-04-29T15:27:46.207826
+5248841,Toxic,Not Toxic,Misaligned,Misaligned,1,2,20,Niall,weak,weak,weak,weak,,2026-04-29T15:28:07.763336
+5606322,Toxic,Toxic,Misaligned,Misaligned,1,2,23,Niall,weak,weak,weak,weak,,2026-04-29T15:28:34.453744
+600072,Toxic,Toxic,Misaligned,Misaligned,1,2,50,Niall,weak,weak,weak,weak,,2026-04-29T15:29:31.113183
