@@ -1,0 +1,28 @@
+id,target,classification,ai_verdict,human_verdict,verdict_match,confidence,time_spent_seconds,reviewer,classification_support,rubric_grounding,logical_consistency,evidence_use,notes,completed_at
+59848,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,155,rb,strong,strong,strong,strong,,2026-04-30T13:58:08.379151
+59849,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,92,rb,strong,strong,strong,strong,,2026-04-30T13:59:47.878446
+59852,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,194,rb,strong,strong,strong,strong,,2026-04-30T14:03:06.062230
+59855,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,53,rb,strong,strong,strong,strong,,2026-04-30T14:04:02.975028
+59863,Not Toxic,Toxic,Well-Aligned,Well-Aligned,1,4,138,rb,strong,strong,strong,strong,,2026-04-30T14:06:22.974536
+239575,Not Toxic,Toxic,Well-Aligned,Well-Aligned,1,4,123,rb,adequate,strong,strong,strong,,2026-04-30T14:08:29.005248
+239576,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,85,rb,strong,strong,strong,strong,,2026-04-30T14:10:14.966468
+239578,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,40,rb,strong,strong,strong,strong,,2026-04-30T14:10:58.912693
+239582,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,242,rb,strong,strong,strong,strong,,2026-04-30T14:15:04.027759
+239585,Not Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,117,rb,strong,strong,strong,strong,,2026-04-30T14:17:03.316755
+239589,Not Toxic,Not Toxic,Well-Aligned,Partially Aligned,0,4,184,rb,weak,weak,weak,weak,Seems to have assumed the identity of the data.,2026-04-30T14:20:15.064812
+239590,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,47,rb,strong,strong,strong,strong,,2026-04-30T14:21:14.086685
+239591,Not Toxic,Not Toxic,Well-Aligned,Partially Aligned,0,5,85,rb,weak,weak,weak,weak,,2026-04-30T14:22:41.954905
+239593,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,49,rb,strong,strong,strong,strong,,2026-04-30T14:23:53.497511
+239594,Not Toxic,Not Toxic,Well-Aligned,Partially Aligned,0,4,86,rb,weak,weak,adequate,weak,,2026-04-30T14:25:22.206862
+239596,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,41,rb,strong,strong,strong,strong,,2026-04-30T14:26:07.646442
+239597,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,31,rb,strong,strong,strong,strong,,2026-04-30T14:26:40.631080
+239598,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,43,rb,strong,strong,strong,strong,,2026-04-30T14:27:26.365315
+239600,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,4,59,rb,adequate,adequate,adequate,strong,,2026-04-30T14:28:27.696001
+239602,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,39,rb,strong,strong,strong,strong,,2026-04-30T14:29:10.098998
+239603,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,40,rb,strong,strong,strong,strong,,2026-04-30T14:29:55.484513
+239604,Not Toxic,Not Toxic,Partially Aligned,Well-Aligned,0,5,24,rb,strong,strong,strong,strong,,2026-04-30T14:30:21.556358
+239626,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,292,rb,strong,strong,strong,strong,,2026-04-30T14:35:27.468873
+239660,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,36,rb,strong,strong,strong,strong,,2026-04-30T14:36:04.974272
+239666,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,53,rb,adequate,strong,adequate,strong,,2026-04-30T14:36:59.151558
+241026,Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,58,rb,strong,strong,strong,strong,,2026-04-30T14:37:58.757166
+245354,Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,182,rb,strong,strong,strong,strong,,2026-04-30T14:41:02.344114
