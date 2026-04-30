@@ -6,8 +6,8 @@ Total Records: 200
 
 VERDICT COUNTS:
 ------------------------------------------------------------
-Well-Aligned        :    186 ( 93.00%)
-Misaligned          :     10 (  5.00%)
-Partially Aligned   :      4 (  2.00%)
+Well-Aligned        :    197 ( 98.50%)
+Misaligned          :      2 (  1.00%)
+Partially Aligned   :      1 (  0.50%)
 
 ============================================================
