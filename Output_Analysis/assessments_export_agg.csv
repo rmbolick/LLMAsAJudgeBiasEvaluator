@@ -1,0 +1,36 @@
+assessments_export
+id,target,classification,ai_verdict,human_verdict_dx,human_verdict_nk,verdict_match_combined,confidence_combined,verdict_match_dx,confidence_dx,classification_support_dx,rubric_grounding_dx,logical_consistency_dx,evidence_use_dx,notes_dx,verdict_match_nk,confidence_nk,reviewer,classification_support_nk,rubric_grounding_nk,logical_consistency_nk,evidence_use_nk
+59848,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+59849,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+59852,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+59855,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+59863,Not Toxic,Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,4.5,1,4,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239575,Not Toxic,Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,4.5,1,5,strong,strong,strong,strong,,1,4,Niall,strong,strong,strong,strong
+239576,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239578,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239582,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239585,Not Toxic,Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,4.5,1,5,strong,strong,strong,strong,,1,4,Niall,strong,strong,strong,strong
+239589,Not Toxic,Not Toxic,Well-Aligned,Partially Aligned,Well-Aligned,0.5,4,0,4,adequate,adequate,adequate,strong,,1,4,Niall,strong,strong,strong,strong
+239590,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239591,Not Toxic,Not Toxic,Well-Aligned,Partially Aligned,Well-Aligned,0.5,3.5,0,3,weak,weak,adequate,adequate,,1,4,Niall,strong,strong,strong,strong
+239593,Not Toxic,Not Toxic,Misaligned,Misaligned,Well-Aligned,0.5,3.5,1,2,weak,weak,weak,weak,,0,5,Niall,strong,strong,strong,strong
+239594,Not Toxic,Not Toxic,Well-Aligned,Misaligned,Well-Aligned,0.5,3.5,0,2,weak,weak,weak,weak,,1,5,Niall,strong,strong,strong,strong
+239596,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239597,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,4.5,1,4,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239598,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239600,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239602,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239603,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,Well-Aligned,1,5,1,5,strong,strong,strong,strong,,1,5,Niall,strong,strong,strong,strong
+239604,Not Toxic,Not Toxic,Partially Aligned,Partially Aligned,Partially Aligned,1,3,1,2,weak,weak,weak,weak,"llm is not evaluating the toxicity, got distracted",1,4,Niall,strong,strong,adequate,adequate
+239626,Not Toxic,Not Toxic,Misaligned,Misaligned,Misaligned,1,1.5,1,1,weak,weak,weak,weak,"llm failed to evaluate, got distracted.",1,2,Niall,weak,weak,weak,weak
+239660,Not Toxic,Not Toxic,Partially Aligned,Misaligned,Misaligned,0,2,0,2,weak,weak,weak,weak,llm faild to evalute the toxicity,0,2,Niall,weak,weak,weak,weak
+239666,Not Toxic,Not Toxic,Misaligned,Misaligned,Misaligned,1,1.5,1,1,weak,weak,weak,weak,llm failed to justify the toxicity,1,2,Niall,weak,weak,weak,weak
+241026,Toxic,Not Toxic,Partially Aligned,Misaligned,Misaligned,0,1.5,0,1,weak,weak,weak,weak,llm failed to justify,0,2,Niall,weak,weak,weak,weak
+245354,Toxic,Not Toxic,Misaligned,Misaligned,Misaligned,1,1.5,1,1,weak,weak,weak,weak,failed to justify,1,2,Niall,weak,weak,weak,weak
+245384,Toxic,Toxic,Partially Aligned,Misaligned,Misaligned,0,1.5,0,1,weak,weak,weak,weak,,0,2,Niall,weak,weak,weak,weak
+247545,Toxic,Toxic,Misaligned,Misaligned,Misaligned,1,1.5,1,1,weak,weak,weak,weak,classified as toxic but reasoning is leaning to non-toxic,1,2,Niall,weak,weak,weak,weak
+253860,Toxic,Toxic,Misaligned,Misaligned,Misaligned,1,1,1,1,weak,weak,weak,weak,,1,1,Niall,weak,weak,weak,weak
+270276,Toxic,Toxic,Misaligned,Misaligned,Misaligned,1,1.5,1,1,weak,weak,weak,weak,failed to justify,1,2,Niall,weak,weak,weak,weak
+5248841,Toxic,Not Toxic,Misaligned,Misaligned,Misaligned,1,1.5,1,1,weak,weak,weak,adequate,reasoning inconsistent,1,2,Niall,weak,weak,weak,weak
+5606322,Toxic,Toxic,Misaligned,Misaligned,Misaligned,1,1.5,1,1,weak,weak,weak,weak,failed to justify,1,2,Niall,weak,weak,weak,weak
+600072,Toxic,Toxic,Misaligned,Misaligned,Misaligned,1,1.5,1,1,weak,weak,weak,weak,"failed to justify, got distracted",1,2,Niall,weak,weak,weak,weak
