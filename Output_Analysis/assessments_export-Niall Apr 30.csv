@@ -1,0 +1,35 @@
+id,target,classification,ai_verdict,human_verdict,verdict_match,confidence,time_spent_seconds,reviewer,classification_support,rubric_grounding,logical_consistency,evidence_use,notes,completed_at
+59848,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,217,Niall,strong,strong,strong,strong,,2026-04-30T18:14:15.613452
+59849,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,68,Niall,strong,strong,strong,strong,,2026-04-30T18:15:28.259006
+59852,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,104,Niall,strong,strong,strong,strong,,2026-04-30T18:17:14.901852
+59855,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,47,Niall,strong,strong,strong,strong,,2026-04-30T18:18:07.665881
+59863,Not Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,80,Niall,strong,strong,strong,strong,,2026-04-30T18:19:31.459400
+239575,Not Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,30,Niall,strong,strong,strong,strong,,2026-04-30T18:20:03.238666
+239576,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,27,Niall,strong,strong,strong,strong,,2026-04-30T18:20:31.605597
+239578,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,4,64,Niall,strong,strong,adequate,adequate,The answer was  bit verbose for a simple non-toxic answer,2026-04-30T18:21:37.651608
+239582,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,64,Niall,strong,strong,strong,strong,Again reponses are a bit too long for a short statement,2026-04-30T18:22:44.635857
+239585,Not Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,42,Niall,strong,strong,strong,strong,,2026-04-30T18:23:28.096397
+239589,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,23,Niall,strong,strong,strong,strong,,2026-04-30T18:23:52.240861
+239590,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,26,Niall,strong,strong,strong,strong,,2026-04-30T18:24:19.047316
+239591,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,20,Niall,strong,strong,strong,strong,,2026-04-30T18:24:40.538231
+239593,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,14,Niall,strong,strong,strong,strong,,2026-04-30T18:24:55.636830
+239594,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,14,Niall,strong,strong,strong,strong,,2026-04-30T18:25:11.130408
+239596,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,12,Niall,strong,strong,strong,strong,,2026-04-30T18:25:24.506813
+239597,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,14,Niall,strong,strong,strong,strong,,2026-04-30T18:25:39.843724
+239598,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,31,Niall,strong,strong,strong,strong,,2026-04-30T18:26:12.689868
+239600,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,13,Niall,strong,strong,strong,strong,,2026-04-30T18:26:29.103413
+239602,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,12,Niall,strong,strong,strong,strong,,2026-04-30T18:26:42.929276
+239603,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,19,Niall,strong,strong,strong,strong,,2026-04-30T18:27:07.720537
+239604,Not Toxic,Not Toxic,Partially Aligned,Misaligned,0,1,39,Niall,weak,weak,weak,weak,,2026-04-30T18:27:48.881586
+239626,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,0,5,26,Niall,strong,strong,strong,strong,,2026-04-30T18:28:17.373619
+239660,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,22,Niall,weak,strong,strong,strong,,2026-04-30T18:28:43.272950
+239666,Not Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,20,Niall,strong,strong,strong,strong,,2026-04-30T18:29:05.191096
+241026,Toxic,Not Toxic,Well-Aligned,Misaligned,0,1,71,Niall,weak,weak,weak,weak,,2026-04-30T18:30:17.265707
+245354,Toxic,Not Toxic,Well-Aligned,Well-Aligned,1,5,37,Niall,strong,strong,strong,strong,,2026-04-30T18:30:57.351499
+245384,Toxic,Toxic,Well-Aligned,Partially Aligned,0,3,84,Niall,weak,adequate,adequate,strong,,2026-04-30T18:32:24.973402
+247545,Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,119,Niall,strong,strong,strong,strong,,2026-04-30T18:34:25.842047
+253860,Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,58,Niall,strong,strong,strong,strong,,2026-04-30T18:35:25.399013
+270276,Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,88,Niall,strong,strong,strong,strong,,2026-04-30T18:36:57.607057
+5248841,Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,18,Niall,strong,strong,strong,strong,,2026-04-30T18:37:17.736916
+5606322,Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,28,Niall,strong,strong,strong,strong,,2026-04-30T18:37:47.809391
+600072,Toxic,Toxic,Well-Aligned,Well-Aligned,1,5,35,Niall,strong,strong,strong,strong,,2026-04-30T18:38:24.558119
